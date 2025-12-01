@@ -1,5 +1,5 @@
 import React from 'react';
-import { FileText, Plus, Trash2, X, Menu } from 'lucide-react';
+import { FileText, Plus, Trash2, X, Upload, Download } from 'lucide-react';
 import { FileItem } from '../types';
 
 interface SidebarProps {
@@ -10,6 +10,8 @@ interface SidebarProps {
   onCreateFile: () => void;
   onDeleteFile: (id: string, e: React.MouseEvent) => void;
   toggleSidebar: () => void;
+  onImportFile: (file: File) => void;
+  onExportCurrent: () => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -20,6 +22,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   onCreateFile,
   onDeleteFile,
   toggleSidebar,
+  onImportFile,
+  onExportCurrent,
 }) => {
   return (
     <>
@@ -73,13 +77,36 @@ const Sidebar: React.FC<SidebarProps> = ({
           ))}
         </div>
 
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="p-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
           <button
             onClick={onCreateFile}
             className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition-colors text-sm font-medium shadow-sm"
           >
             <Plus size={16} />
             New File
+          </button>
+          <label className="w-full flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-100 py-2 px-4 rounded-md transition-colors text-sm font-medium shadow-sm cursor-pointer">
+            <Upload size={16} />
+            Import .md
+            <input
+              type="file"
+              accept=".md,text/markdown"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  onImportFile(file);
+                  e.target.value = '';
+                }
+              }}
+            />
+          </label>
+          <button
+            onClick={onExportCurrent}
+            className="w-full flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-100 py-2 px-4 rounded-md transition-colors text-sm font-medium shadow-sm"
+          >
+            <Download size={16} />
+            Download .md
           </button>
         </div>
       </div>

@@ -1,9 +1,8 @@
 import React from 'react';
 import { 
-  Menu, Eye, Columns, FileText, Moon, Sun, Wand2, 
-  Bot, ALargeSmall, type LucideIcon 
+  Menu, Eye, Columns, FileText, Moon, Sun, type LucideIcon 
 } from 'lucide-react';
-import { ViewMode, AIActionType } from '../types';
+import { ViewMode } from '../types';
 
 interface EditorToolbarProps {
   viewMode: ViewMode;
@@ -11,9 +10,6 @@ interface EditorToolbarProps {
   toggleSidebar: () => void;
   isDark: boolean;
   toggleTheme: () => void;
-  onAIAction: (action: AIActionType) => void;
-  isAILoading: boolean;
-  hasSelection: boolean;
 }
 
 const EditorToolbar: React.FC<EditorToolbarProps> = ({
@@ -21,10 +17,7 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
   setViewMode,
   toggleSidebar,
   isDark,
-  toggleTheme,
-  onAIAction,
-  isAILoading,
-  hasSelection
+  toggleTheme
 }) => {
 
   const ViewIcon = () => {
@@ -48,39 +41,6 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
       </div>
 
       <div className="flex items-center gap-1 md:gap-2">
-        {/* AI Tools Dropdown/Group */}
-        <div className="flex items-center mr-2 md:mr-4 border-r border-gray-200 dark:border-gray-700 pr-2 md:pr-4 gap-1">
-          <button
-            onClick={() => onAIAction(AIActionType.CONTINUE)}
-            disabled={isAILoading}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
-              isAILoading 
-                ? 'bg-blue-100 text-blue-400 cursor-wait' 
-                : 'bg-gradient-to-r from-blue-600 to-violet-600 text-white hover:opacity-90 shadow-sm'
-            }`}
-          >
-            <Wand2 size={16} className={isAILoading ? "animate-spin" : ""} />
-            <span className="hidden sm:inline">AI Write</span>
-          </button>
-
-          {hasSelection && (
-             <div className="hidden md:flex gap-1">
-                <AIButton 
-                  icon={ALargeSmall} 
-                  label="Fix Grammar" 
-                  onClick={() => onAIAction(AIActionType.FIX_GRAMMAR)} 
-                  loading={isAILoading}
-                />
-                <AIButton 
-                  icon={Bot} 
-                  label="Summarize" 
-                  onClick={() => onAIAction(AIActionType.SUMMARIZE)} 
-                  loading={isAILoading}
-                />
-             </div>
-          )}
-        </div>
-
         {/* View Toggles */}
         <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1 gap-1">
           <ViewToggle 
@@ -123,17 +83,6 @@ const ViewToggle = ({ active, onClick, icon: Icon, title }: { active: boolean, o
         ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm' 
         : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
     }`}
-  >
-    <Icon size={16} />
-  </button>
-);
-
-const AIButton = ({ icon: Icon, label, onClick, loading }: { icon: LucideIcon, label: string, onClick: () => void, loading: boolean }) => (
-  <button
-    onClick={onClick}
-    disabled={loading}
-    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md text-violet-600 dark:text-violet-400 transition-colors flex items-center gap-1 disabled:opacity-50"
-    title={label}
   >
     <Icon size={16} />
   </button>

@@ -1,26 +1,24 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import Sidebar from './components/Sidebar';
 import EditorToolbar from './components/EditorToolbar';
 import MarkdownPreview from './components/MarkdownPreview';
-import { generateAIResponse } from './services/geminiService';
-import { FileItem, ViewMode, AIActionType } from './types';
+import { FileItem, ViewMode } from './types';
 
-// Initial sample data
+// Initial sample data (AI references removed)
 const INITIAL_CONTENT = `# Welcome to WebTyper
 
-A minimalist, AI-powered Markdown editor inspired by Typora.
+A minimalist Markdown editor inspired by Typora.
 
 ## Features
 
 - **Distraction-free**: Clean interface focused on writing.
 - **Split View**: Edit and preview side-by-side.
-- **AI Powered**: Use Gemini to rewrite, summarize, or continue your thoughts.
 - **Dark Mode**: Easy on the eyes.
 
 ## Try it out
 
-Select any text and click the "AI" buttons in the toolbar to see magic happen.
+Start typing on the left and see the rendered Markdown on the right.
 
 | Command | Description |
 |---------|-------------|
@@ -55,9 +53,6 @@ const App: React.FC = () => {
     return false;
   });
 
-  // AI State
-  const [isAILoading, setIsAILoading] = useState(false);
-  
   // Refs
   const editorRef = useRef<HTMLTextAreaElement>(null);
 
@@ -131,59 +126,6 @@ const App: React.FC = () => {
 
   const toggleTheme = () => setIsDark(!isDark);
 
-  // --- AI Logic ---
-
-  const handleAIAction = async (action: AIActionType) => {
-    if (!editorRef.current) return;
-
-    const textarea = editorRef.current;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selectedText = content.substring(start, end);
-
-    setIsAILoading(true);
-
-    try {
-      // If no text selected and action is CONTINUE, use whole text as context
-      // If action requires selection but none exists, warn user or grab last paragraph
-      if (!selectedText && action !== AIActionType.CONTINUE) {
-        alert("Please select some text for this action.");
-        setIsAILoading(false);
-        return;
-      }
-
-      const result = await generateAIResponse(action, selectedText, content);
-
-      // Apply result
-      let newText = "";
-      if (action === AIActionType.CONTINUE) {
-         // Append to end or insert at cursor
-         const before = content.substring(0, end);
-         const after = content.substring(end);
-         // Ensure a newline if connecting
-         const spacer = (before.endsWith('\n') || result.startsWith('\n')) ? '' : '\n';
-         newText = before + spacer + result + after;
-      } else {
-        // Replace selection
-        const before = content.substring(0, start);
-        const after = content.substring(end);
-        newText = before + result + after;
-      }
-
-      handleContentChange(newText);
-    } catch (err) {
-      console.error(err);
-      alert("AI Error: Check console or API Key.");
-    } finally {
-      setIsAILoading(false);
-    }
-  };
-
-  const hasSelection = () => {
-     // Simple check, in real app might need state sync or ref check
-     return editorRef.current ? editorRef.current.selectionStart !== editorRef.current.selectionEnd : false;
-  }
-
   return (
     <div className="flex h-screen w-full overflow-hidden bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans">
       <Sidebar
@@ -191,12 +133,40 @@ const App: React.FC = () => {
         currentFileId={currentFileId}
         isOpen={isSidebarOpen}
         onSelectFile={(id) => {
-            setCurrentFileId(id);
-            if(window.innerWidth < 768) setSidebarOpen(false);
+          setCurrentFileId(id);
+          if (window.innerWidth < 768) setSidebarOpen(false);
         }}
         onCreateFile={handleCreateFile}
         onDeleteFile={handleDeleteFile}
         toggleSidebar={() => setSidebarOpen(!isSidebarOpen)}
+        onImportFile={(file) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const text = typeof reader.result === 'string' ? reader.result : '';
+            const newFile: FileItem = {
+              id: uuidv4(),
+              name: file.name || `Imported-${files.length + 1}.md`,
+              content: text,
+              createdAt: Date.now(),
+            };
+            setFiles((prev) => [...prev, newFile]);
+            setCurrentFileId(newFile.id);
+            if (window.innerWidth < 768) setSidebarOpen(false);
+          };
+          reader.readAsText(file);
+        }}
+        onExportCurrent={() => {
+          const current = files.find((f) => f.id === currentFileId);
+          const blob = new Blob([current?.content || ''], { type: 'text/markdown;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = current?.name || 'document.md';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }}
       />
 
       <div className={`flex-1 flex flex-col h-full transition-all duration-300 ${isSidebarOpen ? 'md:ml-64' : 'ml-0'}`}>
@@ -206,9 +176,6 @@ const App: React.FC = () => {
           toggleSidebar={() => setSidebarOpen(!isSidebarOpen)}
           isDark={isDark}
           toggleTheme={toggleTheme}
-          onAIAction={handleAIAction}
-          isAILoading={isAILoading}
-          hasSelection={true} // Simplified for demo
         />
 
         <div className="flex-1 flex overflow-hidden relative">

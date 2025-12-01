@@ -11,16 +11,4 @@ export enum ViewMode {
   SPLIT = 'SPLIT'
 }
 
-export interface AIState {
-  isLoading: boolean;
-  error: string | null;
-  suggestion: string | null;
-}
-
-export enum AIActionType {
-  CONTINUE = 'CONTINUE',
-  SUMMARIZE = 'SUMMARIZE',
-  FIX_GRAMMAR = 'FIX_GRAMMAR',
-  EXPLAIN = 'EXPLAIN',
-  TRANSLATE = 'TRANSLATE'
-}
+// AI-related types removed for now
