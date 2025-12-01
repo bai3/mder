@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebTyper - AI Markdown Editor</title>
+    <!-- Tailwind CSS with Typography Plugin -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            typography: (theme) => ({
+              DEFAULT: {
+                css: {
+                  maxWidth: '100%',
+                  color: theme('colors.gray.800'),
+                  a: {
+                    color: theme('colors.blue.600'),
+                    '&:hover': {
+                      color: theme('colors.blue.800'),
+                    },
+                  },
+                },
+              },
+              dark: {
+                css: {
+                  color: theme('colors.gray.200'),
+                  a: {
+                    color: theme('colors.blue.400'),
+                    '&:hover': {
+                      color: theme('colors.blue.300'),
+                    },
+                  },
+                  h1: { color: theme('colors.gray.100') },
+                  h2: { color: theme('colors.gray.100') },
+                  h3: { color: theme('colors.gray.100') },
+                  h4: { color: theme('colors.gray.100') },
+                  code: { color: theme('colors.gray.100') },
+                  strong: { color: theme('colors.gray.100') },
+                  blockquote: { color: theme('colors.gray.100') },
+                },
+              },
+            }),
+          },
+        },
+      }
+    </script>
+    <style>
+      /* Custom Scrollbar for Typora-like feel */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+      }
+      .dark ::-webkit-scrollbar-thumb {
+        background: #475569;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+      .dark ::-webkit-scrollbar-thumb:hover {
+        background: #64748b;
+      }
+      body {
+        overscroll-behavior: none;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "uuid": "https://aistudiocdn.com/uuid@^13.0.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.555.0",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "remark-gfm": "https://aistudiocdn.com/remark-gfm@^4.0.1",
+    "react-markdown": "https://aistudiocdn.com/react-markdown@^10.1.0"
+  }
+}
+</script>
+</head>
+  <body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
+    <div id="root"></div>
+  </body>
+</html>

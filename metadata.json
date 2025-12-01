@@ -1,0 +1,5 @@
+{
+  "name": "WebTyper - AI Markdown Editor",
+  "description": "A minimalist, Typora-inspired Markdown editor with built-in Gemini AI writing assistance.",
+  "requestFramePermissions": []
+}
